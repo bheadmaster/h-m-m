@@ -405,6 +405,7 @@ function load_file(&$mm)
 
 function calculate_x_and_lh(&$mm, $id)
 {
+    echo_to_file("calculating x and lh - 1...");
 	$node = $mm['nodes'][$id];
 
 	$mm['nodes'][$id]['x']
@@ -421,27 +422,36 @@ function calculate_x_and_lh(&$mm, $id)
 		)
 	;
 
+    echo_to_file("calculating x and lh - 2...");
 	$max_width
 		=  ($node['is_leaf'] || ($node['collapsed'] ?? false)) * $mm['max_leaf_width']
 		+ !($node['is_leaf'] || ($node['collapsed'] ?? false)) * $mm['max_parent_width'];
 
+    echo_to_file("calculating x and lh - 3...");
 	if ( mb_strlen($node['title']) > width_tolerance * $max_width )
 	{
+        echo_to_file("calculating x and lh - 3.1...");
 		$lines = explode("\n" ,wordwrap($node['title'] ,$max_width));
 
+        echo_to_file("calculating x and lh - 3.2...");
 		$mm['nodes'][$id]['w'] = 0;
+
+        echo_to_file("calculating x and lh - 3.3...");
 		foreach ($lines as $line)
 			$mm['nodes'][$id]['w'] =
 				max($mm['nodes'][$id]['w'], trim(mb_strlen($line)));
 
+        echo_to_file("calculating x and lh - 3.4...");
 		$mm['nodes'][$id]['lh'] = count($lines);
 	}
 	else
 	{
+        echo_to_file("calculating x and lh - 3.5...");
 		$mm['nodes'][$id]['w']  = mb_strlen($node['title']);
 		$mm['nodes'][$id]['lh'] = 1;
 	}
 
+    echo_to_file("calculating x and lh - 4...");
 	$mm['map_width'] =
 		max
 		(
@@ -451,6 +461,7 @@ function calculate_x_and_lh(&$mm, $id)
 		)
 	;
 
+    echo_to_file("calculating x and lh - 5...");
 	$mm['nodes'][$id]['clh'] = 0;
 	if (($mm['nodes'][$id]['collapsed'] ?? false) || $mm['nodes'][$id]['is_leaf'])
 		$mm['nodes'][$id]['clh'] = $mm['nodes'][$id]['lh'];
@@ -460,6 +471,7 @@ function calculate_x_and_lh(&$mm, $id)
 		calculate_x_and_lh($mm, $cid);
 		$mm['nodes'][$id]['clh'] += $mm['nodes'][$cid]['clh'];
 	}
+    echo_to_file("calculating x and lh - DONE");
 
 }
 
@@ -814,12 +826,15 @@ function add_content_to_the_map(&$mm, $id)
 function build_map(&$mm)
 {
 	// resetting the global values
+    echo_to_file("resetting the global values...");
 	$mm['map_width']  = 0;
 	$mm['map_height'] = 0;
 	$mm['map_top']    = 0;
 	$mm['map_bottom'] = 0;
+    echo_to_file("resetting the global values - DONE");
 
 	// resetting the coordinates
+    echo_to_file("executing foreach...");
 	foreach ($mm['nodes'] as $id=>$node)
 	{
 		$mm['nodes'][$id]['x']  = -1;
@@ -827,7 +842,9 @@ function build_map(&$mm)
 		$mm['nodes'][$id]['h']  = -1;
 		$mm['nodes'][$id]['lh'] = -1;
 	}
+    echo_to_file("executing foreach - DONE");
 
+    echo_to_file("setting up some node stuff...");
 	$mm['nodes'][0]['x']  = 0;
 	$mm['nodes'][0]['w']  = left_padding;
 	$mm['nodes'][0]['lh'] = 1;
@@ -838,23 +855,33 @@ function build_map(&$mm)
 	$mm['map_height']=0;
 	$mm['map_top']=0;
 	$mm['map_bottom']=0;
+    echo_to_file("setting up some node stuff - DONE");
 
 	// calculating the new coordinates
+    echo_to_file("calculating new coordinates...");
 	calculate_x_and_lh($mm,$mm['root']);
+    echo_to_file("calculating new coordinates - 1...");
 	calculate_h($mm);
+    echo_to_file("calculating new coordinates - 2...");
 	calculate_y($mm);
+    echo_to_file("calculating new coordinates - 3...");
 	calculate_height_shift($mm, $mm['root']);
+    echo_to_file("calculating new coordinates - DONE");
 
 	// resetting the map, 2/2
+    echo_to_file("resetting the map...");
 	$height = max($mm['map_bottom'],$mm['terminal_height']);
 	$blank = str_repeat(' ', $mm['map_width']+$mm['terminal_width']);
 
 	for ($i=$mm['map_top'] ; $i<=$height ; $i++)
 		$mm['map'][$i] = $blank;
+    echo_to_file("resetting the map - DONE");
 
 	// building the new map
+    echo_to_file("building the new map...");
 	draw_connections($mm, $mm['root']);
 	add_content_to_the_map($mm, $mm['root']);
+    echo_to_file("building the new map - DONE");
 
 }
 
@@ -2076,15 +2103,25 @@ function find_branch(&$mm, $cid)
 
 function collapse_all(&$mm)
 {
+    echo_to_file("calling foreach...");
 	foreach ($mm['nodes'] as $id=>$node)
 		if (!$node['is_leaf'] && $id!=0 && $id!=$mm['root'])
 			$mm['nodes'][$id]['collapsed'] = true;
+    echo_to_file("calling foreach - DONE");
 
 	$mm['active_node'] = $mm['root'];
 
+    echo_to_file("building map...");
 	build_map($mm);
+    echo_to_file("building map - DONE");
+
+    echo_to_file("centering active node...");
 	center_active_node($mm);
+    echo_to_file("centering active node - DONE");
+
+    echo_to_file("displaying...");
 	display($mm);
+    echo_to_file("displaying - DONE");
 }
 
 
