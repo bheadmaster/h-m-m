@@ -428,6 +428,28 @@ function calculate_x_and_lh(&$mm, $id)
 		+ !($node['is_leaf'] || ($node['collapsed'] ?? false)) * $mm['max_parent_width'];
 
     echo_to_file("calculating x and lh - 3...");
+
+    // TESTING GROUND
+    echo_to_file("evaluating node title...");
+    $ASDFQWER = $node['title'];
+    echo_to_file("evaluating node title - DONE");
+
+    echo_to_file("evaluating width tolerance times max width...");
+    $ASDFQWER = width_tolerance * $max_width;
+    echo_to_file("evaluating width tolerance times max width - DONE");
+
+    echo_to_file("getting type of node title...");
+    echo_to_file(gettype($node['title']));
+    echo_to_file("getting type of node title - DONE");
+
+    echo_to_file("evaluating mb strlen of node title...");
+    $ASDFQWER = mb_strlen($node['title']);
+    echo_to_file("evaluating mb strlen of node title - DONE");
+
+
+    //echo_to_file("mb strlen of node title:")
+    //
+
 	if ( mb_strlen($node['title']) > width_tolerance * $max_width )
 	{
         echo_to_file("calculating x and lh - 3.1...");
