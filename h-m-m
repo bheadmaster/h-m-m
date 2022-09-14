@@ -2423,18 +2423,29 @@ function monitor_key_presses(&$mm)
 // }}}
 // {{{ main
 
+echo("Setting up screen...\n");
 set_up_screen();
+echo("Loading settings...\n");
 load_settings($mm);
+echo("Clearing...\n");
 clear();
+echo("Loading file...\n");
 load_file($mm);
 
+echo("Collapsing all...\n");
 collapse_all($mm);
+echo("Collapsing level...\n");
 collapse_level($mm, $mm['initial_depth'], true);
 
+echo("Building map...\n");
 build_map($mm);
+echo("Centering active node...\n");
 center_active_node($mm);
+echo("Displaying...\n");
 display($mm);
+echo("Monitoring key presses...\n");
 monitor_key_presses($mm);
 
+echo("Quitting...\n");
 
 // }}}
