@@ -17,6 +17,15 @@ $mm['message_color']		= "\033[38;5;0m\033[48;5;141m\033[1m";
 $mm['question_color']		= "\033[38;5;168m";
 
 
+function echo_to_file($message)
+{
+    $f= fopen("log.txt", "a") or die("Unable to open file!");
+    fwrite($f, $message);
+    fwrite($f, "\n");
+    fclose($f);
+}
+
+
 function load_settings(&$mm)
 {
 	global $argv;
@@ -161,12 +170,16 @@ function set_up_screen()
 	// https://www.ibm.com/docs/en/aix/7.1?topic=s-stty-command
 
 	// system('stty cbreak -echo ');                              // testing
+    echo_to_file("Calling stty...");
 	system('stty cbreak -echo -crterase intr undef && tput smcup');      // production
 
 	// the first code disables the text cursor and the second one gets rid of the mouse!
 	// https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
 	// 'l' disables and 'h' enables
+    echo_to_file("Disabling text cursor and getting rid of mouse...");
 	echo "\033[?25l\033[?9;1000;1001;1002;1003;1004;1007;1005;1006;1015;1016l";
+
+    echo_to_file("Setting up screen - DONE");
 }
 
 
@@ -2423,29 +2436,29 @@ function monitor_key_presses(&$mm)
 // }}}
 // {{{ main
 
-echo("Setting up screen...\n");
+echo_to_file("Setting up screen...");
 set_up_screen();
-echo("Loading settings...\n");
+echo_to_file("Loading settings...");
 load_settings($mm);
-echo("Clearing...\n");
+echo_to_file("Clearing...");
 clear();
-echo("Loading file...\n");
+echo_to_file("Loading file...");
 load_file($mm);
 
-echo("Collapsing all...\n");
+echo_to_file("Collapsing all...");
 collapse_all($mm);
-echo("Collapsing level...\n");
+echo_to_file("Collapsing level...");
 collapse_level($mm, $mm['initial_depth'], true);
 
-echo("Building map...\n");
+echo_to_file("Building map...");
 build_map($mm);
-echo("Centering active node...\n");
+echo_to_file("Centering active node...");
 center_active_node($mm);
-echo("Displaying...\n");
+echo_to_file("Displaying...");
 display($mm);
-echo("Monitoring key presses...\n");
+echo_to_file("Monitoring key presses...");
 monitor_key_presses($mm);
 
-echo("Quitting...\n");
+echo_to_file("Quitting...");
 
 // }}}
